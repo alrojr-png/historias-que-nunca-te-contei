@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Histórias que nunca te contei</title>
+<meta name="description" content="Descobrir histórias, sonhos, aprendizados e memórias dos familiares por meio de perguntas que normalmente não fazemos no dia a dia.">
+<meta name="theme-color" content="#ed7336">
+<link rel="icon" href="cartas/pergunta-01-verso.webp">
+<meta property="og:title" content="Histórias que nunca te contei">
+<meta property="og:description" content="Descobrir histórias, sonhos, aprendizados e memórias dos familiares por meio de perguntas que normalmente não fazemos no dia a dia.">
+<meta property="og:image" content="img/capa.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Playfair+Display:ital,wght@1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* cores tiradas do manual original */
+  --vermelho:#c44030; --amarelo:#fdbf26; --ardosia:#698a94; --creme:#f2f2f0; --laranja:#ed7336;
+  --texto:#3d4f55; --raio:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:"Nunito",system-ui,sans-serif;font-weight:700;color:var(--texto);background:#d9622f;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;touch-action:manipulation}
+img{display:block;max-width:100%}
+/* feito para celular: no computador, vira uma coluna do tamanho de um celular */
+.app{max-width:480px;margin:0 auto;min-height:100dvh;position:relative;background:var(--laranja);overflow:hidden}
+.tela{display:none;min-height:100dvh}
+.tela.ativa{display:flex;flex-direction:column}
+.serif{font-family:"Playfair Display",Georgia,serif;font-style:italic;font-weight:400;letter-spacing:-.01em}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:56px;padding:0 1.6em;border-radius:999px;font-weight:900;font-size:1.08rem;letter-spacing:.01em;transition:transform .15s ease,opacity .2s}
+.btn:active{transform:scale(.97)}
+.btn:focus-visible,.icone:focus-visible,.carta:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.btn-branco{background:#fff;color:var(--vermelho);box-shadow:0 6px 0 rgba(150,40,20,.25)}
+.btn-vermelho{background:var(--vermelho);color:#fff;box-shadow:0 6px 0 #8e2a1e}
+.btn-amarelo{background:var(--amarelo);color:var(--vermelho);box-shadow:0 6px 0 #c98f0a}
+.btn[disabled]{opacity:.4;pointer-events:none}
+
+/* ---------- INÍCIO ---------- */
+#inicio{justify-content:center}
+.capa img{width:100%;height:auto;aspect-ratio:828/990;object-fit:cover}
+.inicio-acoes{padding:8px 24px calc(30px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:16px}
+.rodape{color:#fff;opacity:.85;font-size:.8rem;text-align:center}
+/* pontos (opcional) */
+.opcao{display:flex;align-items:center;justify-content:space-between;gap:12px;color:#fff;padding:2px 4px;font-size:1.02rem}
+.opcao small{display:block;font-weight:600;opacity:.85;font-size:.85rem}
+.chave{width:56px;height:32px;border-radius:99px;background:rgba(255,255,255,.35);position:relative;flex:none;transition:background .2s}
+.chave::after{content:"";position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .2s ease}
+.chave[aria-checked="true"]{background:var(--vermelho)}
+.chave[aria-checked="true"]::after{transform:translateX(24px)}
+.nomes{display:none;background:#fff;border-radius:22px;padding:18px 16px 16px;box-shadow:0 10px 30px rgba(120,30,10,.2);animation:sobe .3s ease}
+.nomes.mostrar{display:block}
+.nomes h3{font-family:"Playfair Display",serif;font-style:italic;font-weight:500;color:var(--ardosia);font-size:1.5rem;line-height:1;margin-bottom:12px}
+.campo{display:flex;align-items:center;background:var(--creme);border-radius:16px;padding:5px 5px 5px 16px;border:2px solid transparent;transition:border-color .2s}
+.campo:focus-within{border-color:var(--amarelo)}
+.campo input{flex:1;min-width:0;height:46px;border:0;background:none;font:inherit;font-size:1.05rem;color:var(--texto);outline:0}
+.campo input::placeholder{color:#8b9a9f;font-weight:600}
+.mais{width:46px;height:46px;border-radius:12px;background:var(--vermelho);color:#fff;display:grid;place-items:center;flex:none}
+.mais svg{width:22px;height:22px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chips:empty{display:none}
+.chip{display:inline-flex;align-items:center;gap:4px;background:#fde7b0;color:var(--vermelho);border-radius:99px;padding:4px 4px 4px 14px;font-size:1rem;font-weight:900}
+.chip button{width:30px;height:30px;border-radius:50%;color:var(--vermelho);font-size:1.2rem;line-height:1;opacity:.7}
+.dica{color:var(--ardosia);font-size:.88rem;font-weight:700;margin-top:10px}
+
+/* ---------- CAIXA DE REGRAS (texto igual ao manual) ---------- */
+.fundo{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;padding:calc(14px + env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom));background:rgba(70,25,10,.55);backdrop-filter:blur(3px)}
+.fundo.aberto{display:flex}
+.caixa{width:100%;max-width:452px;height:100%;max-height:820px;background:#fff;border-radius:26px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 30px 60px rgba(60,20,10,.4);animation:sobe .35s cubic-bezier(.2,.8,.2,1)}
+@keyframes sobe{from{transform:translateY(30px);opacity:0}}
+.faixa{background:var(--ardosia);color:#fff;padding:16px 20px;border-radius:0 0 22px 22px;flex:none}
+.faixa h2{font-weight:900;font-size:1.4rem;letter-spacing:.02em;text-align:center}
+.faixa h2 .serif{color:var(--amarelo);font-weight:500;font-size:1.1em}
+.rolar{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.regras-corpo{padding:24px 20px 10px;display:flex;flex-direction:column;gap:28px}
+.titulo-sec{font-size:2.2rem;line-height:.95;text-transform:uppercase;margin-bottom:12px}
+.vermelho{color:var(--vermelho)} .ardosia{color:var(--ardosia)}
+.bolinhas{list-style:none;display:flex;flex-direction:column;gap:6px}
+.bolinhas li{position:relative;padding-left:22px;line-height:1.4}
+.bolinhas li::before{content:"";position:absolute;left:2px;top:.45em;width:11px;height:11px;border-radius:50%;background:var(--vermelho)}
+.caixa-vermelha{background:var(--vermelho);color:#fff;border-radius:6px 22px 22px 22px;padding:18px}
+.caixa-vermelha ol{list-style:none;display:flex;flex-direction:column;gap:12px;line-height:1.35}
+.vencer p{line-height:1.45;margin-bottom:8px}
+.vencer .destaque{color:var(--laranja)}
+.vencer ul{list-style:none;margin:0 0 8px 6px;line-height:1.6}
+.vencer ul li::before{content:"•";color:var(--vermelho);margin-right:4px}
+.lista-cartas{background:var(--creme);border-radius:var(--raio);padding:20px}
+.lista-cartas dl{display:grid;gap:12px}
+.lista-cartas dt{color:var(--vermelho);font-weight:900}
+.lista-cartas dd{font-weight:600;line-height:1.35}
+.lista-cartas .obs{color:var(--vermelho);font-weight:800;margin-bottom:12px}
+.entendi{padding:14px 20px calc(18px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px;align-items:stretch}
+.entendi .btn{width:100%}
+.seta{flex:none;text-align:center;font-size:.85rem;font-weight:800;color:var(--ardosia);padding:10px 0 12px;border-top:1px solid #eee;transition:opacity .2s}
+.seta.some{opacity:0;pointer-events:none;height:0;padding:0;border:0;overflow:hidden}
+.seta span{display:inline-block;animation:pula 1.4s ease-in-out infinite}
+@keyframes pula{50%{transform:translateY(4px)}}
+
+/* ---------- JOGO ---------- */
+#jogo{background:
+  radial-gradient(60% 45% at 80% 12%, rgba(95,190,235,.55), transparent 70%),
+  radial-gradient(70% 55% at 10% 90%, rgba(253,191,38,.75), transparent 70%),
+  linear-gradient(160deg,#f3a03a 0%,#ed7336 45%,#e0532f 100%);color:#fff}
+.topo{display:flex;align-items:center;gap:8px;padding:calc(10px + env(safe-area-inset-top)) 12px 6px}
+.topo .info{flex:1;text-align:center;font-weight:800;font-size:.95rem;line-height:1.2}
+.topo .info b{display:block;font-family:"Playfair Display",serif;font-style:italic;font-weight:500;font-size:1.35rem}
+.icone{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;flex:none}
+.icone svg{width:24px;height:24px}
+.palco{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 20px calc(24px + env(safe-area-inset-bottom));gap:16px}
+.mesa{position:relative;width:min(80vw,calc((100dvh - 260px) * .667),400px);aspect-ratio:2/3}
+.monte{position:absolute;inset:0;border-radius:4.5%;background:rgba(120,30,10,.25)}
+.monte.m1{transform:translate(6px,6px) rotate(2.2deg)}
+.monte.m2{transform:translate(12px,10px) rotate(4deg);opacity:.6}
+.carta{position:absolute;inset:0;perspective:1400px;border-radius:4.5%}
+.carta .gira{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.carta.virada .gira{transform:rotateY(180deg)}
+.carta .lado{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:4.5%;overflow:hidden;box-shadow:0 18px 40px rgba(110,30,10,.35),0 2px 6px rgba(0,0,0,.15);background:#fff}
+.carta .lado img{width:100%;height:100%;object-fit:cover}
+.carta .frente{transform:rotateY(180deg)}
+.carta.entrando{animation:entra .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes entra{from{transform:translateY(40px) rotate(-4deg);opacity:0}to{transform:none;opacity:1}}
+.toque{font-size:.95rem;font-weight:800;text-align:center;min-height:1.3em}
+.acoes{display:flex;flex-direction:column;gap:12px;width:100%}
+.acoes .btn{width:100%}
+/* placar no jogo */
+.placar{display:none;width:100%;background:rgba(255,255,255,.95);color:var(--texto);border-radius:var(--raio);padding:10px 10px 8px;box-shadow:0 10px 30px rgba(110,30,10,.25)}
+.placar-on .placar{display:block}
+.placar-on .mesa{width:min(68vw,calc((100dvh - 470px) * .667),360px)}
+.placar-lista{display:flex;flex-direction:column;gap:6px;max-height:28dvh;overflow:auto}
+.jog{display:flex;align-items:center;gap:6px}
+.jog .nome{flex:1;min-width:0;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.jog .pts{min-width:1.8em;text-align:right;font-weight:900;color:var(--vermelho);font-size:1.15rem;margin-right:2px}
+.pt{height:38px;min-width:40px;padding:0 7px;border-radius:10px;background:var(--creme);font-weight:900;color:var(--texto);font-size:.95rem}
+.pt.b{background:#fde7b0}
+.pt.o{background:var(--amarelo);color:var(--vermelho);display:none}
+.ouro-on .pt.o{display:inline-block}
+.legenda{display:flex;justify-content:space-between;gap:6px;font-size:.72rem;font-weight:700;opacity:.8;padding:6px 2px 0;flex-wrap:wrap}
+.legenda button{text-decoration:underline;font-weight:800;color:var(--vermelho)}
+.ranking{list-style:none;width:100%;max-width:380px;background:#fff;color:var(--texto);border-radius:var(--raio);padding:8px 16px}
+.ranking:empty{display:none}
+.ranking li{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eee;font-weight:900}
+.ranking li:last-child{border:0}
+.ranking li:first-child{color:var(--vermelho);font-size:1.15rem}
+#btnCuringa{display:none}
+#btnCuringa.mostrar{display:flex}
+
+/* fim */
+#fim{align-items:center;justify-content:center;padding:40px 24px;text-align:center;gap:22px;color:#fff}
+#fim h2{font-size:2.6rem;line-height:1;color:var(--amarelo)}
+#fim p{font-size:1.15rem;max-width:20em;line-height:1.4}
+
+/* menu */
+.menu{position:fixed;inset:0;background:rgba(40,20,10,.45);display:none;align-items:flex-end;justify-content:center;z-index:10}
+.menu.aberto{display:flex}
+.menu-caixa{background:#fff;width:100%;max-width:480px;border-radius:24px 24px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px;animation:sobe .25s ease}
+.menu-caixa .btn{width:100%}
+.btn-creme{background:var(--creme);color:var(--texto)}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- INÍCIO -->
+<section class="tela ativa" id="inicio">
+  <div class="capa"><img src="img/capa.webp" alt="Histórias que nunca te contei. Descobrir histórias, sonhos, aprendizados e memórias dos familiares por meio de perguntas que normalmente não fazemos no dia a dia." width="828" height="990"></div>
+  <div class="inicio-acoes">
+    <button class="btn btn-branco" id="btnComecar">Começar a jogar</button>
+    <div class="opcao">
+      <span>Jogar com pontos<small>Opcional, como no manual</small></span>
+      <button class="chave" id="chavePlacar" role="switch" aria-checked="false" aria-label="Jogar com pontos"></button>
+    </div>
+    <div class="nomes" id="nomes">
+      <h3>Quem vai jogar?</h3>
+      <form class="campo" id="formNome">
+        <input id="inputNome" maxlength="18" placeholder="Digite um nome" autocomplete="off" enterkeyhint="done" aria-label="Nome de quem vai jogar">
+        <button class="mais" type="submit" aria-label="Adicionar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+      </form>
+      <div class="chips" id="chips"></div>
+      <p class="dica" id="dicaJog">Coloque pelo menos 2 nomes.</p>
+    </div>
+    <p class="rodape">Escola do Sebrae · escoladosebrae.com.br</p>
+  </div>
+</section>
+
+<!-- JOGO -->
+<section class="tela" id="jogo">
+  <header class="topo">
+    <button class="icone" id="btnMenu" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <div class="info" aria-live="polite"><b id="infoRodada">Rodada 1</b><span id="infoResta"></span></div>
+    <button class="icone" id="btnAjuda" aria-label="Regras do jogo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M9.6 9.3a2.5 2.5 0 1 1 3.4 2.4c-.7.3-1 .8-1 1.5v.4"/><circle cx="12" cy="16.8" r=".6" fill="currentColor"/></svg></button>
+  </header>
+  <div class="palco">
+    <div class="mesa">
+      <div class="monte m2" id="monte2"></div>
+      <div class="monte m1" id="monte1"></div>
+      <button class="carta" id="carta" aria-label="Virar a carta">
+        <div class="gira">
+          <div class="lado verso"><img id="imgVerso" alt="Verso da carta"></div>
+          <div class="lado frente"><img id="imgFrente" alt=""></div>
+        </div>
+      </button>
+    </div>
+    <p class="toque" id="toque">Toque na carta para virar</p>
+    <div class="placar" id="placar">
+      <div class="placar-lista" id="placarLista"></div>
+      <div class="legenda"><span>+1 resposta simples · +2 com história · ★ "Eu nunca soube disso!"</span><button id="btnDesfazer">desfazer</button></div>
+    </div>
+    <div class="acoes">
+      <button class="btn btn-amarelo" id="btnCuringa">Sacar uma carta-curinga</button>
+      <button class="btn btn-branco" id="btnProxima">Próxima pergunta</button>
+    </div>
+  </div>
+</section>
+
+<!-- FIM -->
+<section class="tela" id="fim">
+  <h2 class="serif">Fim das cartas!</h2>
+  <p id="fimTexto">O objetivo é colecionar histórias.</p>
+  <ol class="ranking" id="ranking"></ol>
+  <button class="btn btn-branco" id="btnDeNovo">Jogar de novo</button>
+</section>
+
+</div>
+
+<!-- CAIXA DE REGRAS: aparece antes do jogo -->
+<div class="fundo" id="regras" role="dialog" aria-modal="true" aria-labelledby="tituloRegras">
+  <div class="caixa">
+    <header class="faixa"><h2 id="tituloRegras">REGRAS<span class="serif">DO</span>JOGO</h2></header>
+    <div class="rolar" id="rolar">
+<div class="regras-corpo">
+    <section>
+      <h2 class="titulo-sec serif vermelho">Preparação</h2>
+      <ul class="bolinhas">
+        <li>Separe as cartas de perguntas e embaralhe.</li>
+        <li>As cartas-curinga ficam em um monte separado.</li>
+        <li>Todos os participantes sentam em círculo.</li>
+      </ul>
+    </section>
+    <section>
+      <h2 class="titulo-sec serif ardosia">Como<br>jogar</h2>
+      <div class="caixa-vermelha"><ol>
+        <li>1. O participante da vez pega uma carta de pergunta e a lê em voz alta.</li>
+        <li>2. Ele escolhe quem responderá ou direciona a pergunta para todo o grupo.</li>
+        <li>3. Após a resposta, os demais podem fazer uma pergunta complementar.</li>
+        <li>4. A rodada termina quando todos estiverem satisfeitos com a resposta.</li>
+        <li>5. A cada duas rodadas, alguém pode sacar uma carta-curinga.</li>
+      </ol></div>
+    </section>
+    <section class="vencer">
+      <h2 class="titulo-sec serif ardosia">Como vencer?</h2>
+      <p>Este não é um jogo de competição tradicional. <span class="destaque">O objetivo é colecionar histórias.</span></p>
+      <p>Mas, se quiser uma dinâmica com pontos:</p>
+      <ul>
+        <li>Resposta simples: 1 ponto</li>
+        <li>Resposta com uma história ou detalhe marcante: 2 pontos</li>
+        <li>Quando alguém disser: "Eu nunca soube disso!": +1 ponto bônus</li>
+      </ul>
+      <p>Ganha quem acumular mais pontos ou quem tiver contado a história mais surpreendente da noite.</p>
+    </section>
+    <section class="lista-cartas">
+      <h2 class="titulo-sec serif ardosia">Cartas<br>curinga</h2>
+      <dl>
+        <div><dt>Conte Mais!</dt><dd>Escolha alguém para aprofundar uma história contada anteriormente.</dd></div>
+        <div><dt>Viagem no Tempo</dt><dd>Se pudesse voltar para qualquer fase da sua vida por um dia, qual seria?</dd></div>
+        <div><dt>Mostra a Foto!</dt><dd>Mostre uma foto antiga do celular ou conte uma história sobre uma foto marcante.</dd></div>
+        <div><dt>Conselho para o Futuro</dt><dd>Dê um conselho para os participantes mais jovens da roda.</dd></div>
+        <div><dt>Troca de Pergunta</dt><dd>Troque sua pergunta por outra carta.</dd></div>
+        <div><dt>Resposta Coletiva</dt><dd>Todos devem responder à mesma pergunta.</dd></div>
+        <div><dt>Momento Vergonha</dt><dd>Conte uma situação engraçada ou embaraçosa que hoje faz você rir.</dd></div>
+        <div><dt>Gratidão</dt><dd>Fale sobre uma pessoa que marcou sua vida e por quê.</dd></div>
+        <div><dt>Herança de Família</dt><dd>Compartilhe um ensinamento ou costume que gostaria de manter vivo na família.</dd></div>
+        <div><dt>Trilha Sonora da Vida</dt><dd>Escolha uma música que represente uma fase importante da sua vida e explique o motivo.</dd></div>
+        <div><dt>História Inacabada</dt><dd>Conte um sonho que você ainda pretende realizar.</dd></div>
+        <div><dt>Ponto em Comum</dt><dd>Após uma resposta, todos devem dizer algo em que se identificaram com aquela história.</dd></div>
+        <div><dt>Descubra Quem</dt><dd>Conte uma história sem revelar quem participou. Os outros tentam adivinhar.</dd></div>
+        <div><dt>Super Curiosidade</dt><dd>Faça qualquer pergunta respeitosa para qualquer participante.</dd></div>
+        <div><dt>Verdade ou Detalhe?</dt><dd>O participante responde à pergunta original ou conta uma história que ninguém da roda conhece.</dd></div>
+      </dl>
+    </section>
+    <section class="lista-cartas">
+      <h2 class="titulo-sec serif ardosia">Cartas<br>ouro</h2>
+      <p class="obs">Estas podem valer pontos extras.</p>
+      <dl>
+        <div><dt>O que ninguém sabe?</dt><dd>Conte algo sobre você que sua família provavelmente não conhece.</dd></div>
+        <div><dt>Momento que mudou tudo</dt><dd>Qual foi um acontecimento que mudou sua forma de enxergar a vida?</dd></div>
+        <div><dt>Orgulho</dt><dd>Qual momento da sua vida faz você sentir mais orgulho?</dd></div>
+        <div><dt>Sonho Realizado</dt><dd>Qual sonho você realizou e que parecia impossível?</dd></div>
+        <div><dt>Legado</dt><dd>O que você gostaria que sua família lembrasse sobre você daqui a muitos anos?</dd></div>
+      </dl>
+    </section>
+</div>
+      <div class="entendi"><button class="btn btn-vermelho" id="btnEntendi">Entendi, vamos jogar!</button></div>
+    </div>
+    <div class="seta" id="seta"><span>↓</span> Role para ler tudo</div>
+  </div>
+</div>
+
+<!-- MENU -->
+<div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Menu">
+  <div class="menu-caixa">
+    <button class="btn btn-creme" id="mRegras">Regras do jogo</button>
+    <button class="btn btn-creme" id="mFim">Encerrar e ver resultado</button>
+    <button class="btn btn-creme" id="mRecomecar">Começar outro jogo</button>
+    <button class="btn btn-vermelho" id="mFechar">Continuar jogando</button>
+  </div>
+</div>
+
+<script src="cartas.js"></script>
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const CHAVE = 'hqnc-jogo-v3';
+  // embaralha de verdade a cada jogo (Fisher-Yates com números aleatórios do navegador)
+  const aleatorio = n => { const b = new Uint32Array(1); crypto.getRandomValues(b); return Math.floor(b[0] / 4294967296 * n); };
+  const embaralhar = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = aleatorio(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const textoDe = {}; Object.values(CARTAS).flat().forEach(c => textoDe[c.id] = c.texto);
+  const tipoDe = id => id.split('-')[0];
+
+  // todo jogo começa do zero: regras + cartas embaralhadas de novo
+  localStorage.removeItem(CHAVE);
+  let E = null;
+  const guardados = (() => { try { return JSON.parse(localStorage.getItem('hqnc-nomes')) || {}; } catch (e) { return {}; } })();
+  let placarLigado = !!guardados.placar;
+  let nomes = guardados.nomes || [];
+  const guardarNomes = () => { try { localStorage.setItem('hqnc-nomes', JSON.stringify({ placar: placarLigado, nomes })); } catch (e) {} };
+  function novoEstado(lista) {
+    return {
+      perguntas: embaralhar(CARTAS.pergunta.map(c => c.id)),
+      // as cartas ouro ficam misturadas no monte das curingas
+      curingas: embaralhar([...CARTAS.curinga, ...CARTAS.ouro].map(c => c.id)),
+      rodada: 1, atual: null, virada: false, emCuringa: false, curingaLiberada: false, guardada: null,
+      placar: lista.length >= 2, jogadores: lista.map(n => ({ nome: n, pts: 0 })), historico: []
+    };
+  }
+  function salvar() {}
+  function ir(id) { document.querySelectorAll('.tela').forEach(t => t.classList.toggle('ativa', t.id === id)); window.scrollTo(0, 0); }
+
+  /* caixa de regras */
+  const regras = $('#regras'), rolar = $('#rolar'), seta = $('#seta');
+  let depoisDeEntender = null;
+  function abrirRegras(acao, textoBotao) {
+    depoisDeEntender = acao;
+    $('#btnEntendi').textContent = textoBotao;
+    rolar.scrollTop = 0; seta.classList.remove('some');
+    regras.classList.add('aberto');
+    $('#btnEntendi').focus({ preventScroll: true });
+  }
+  rolar.addEventListener('scroll', () => {
+    if (rolar.scrollTop + rolar.clientHeight > rolar.scrollHeight - 40) seta.classList.add('some');
+  }, { passive: true });
+  $('#btnEntendi').onclick = () => { regras.classList.remove('aberto'); if (depoisDeEntender) depoisDeEntender(); };
+
+  /* início */
+  const chave = $('#chavePlacar');
+  function desenharInicio() {
+    guardarNomes();
+    chave.setAttribute('aria-checked', placarLigado);
+    $('#nomes').classList.toggle('mostrar', placarLigado);
+    const C = $('#chips'); C.innerHTML = '';
+    nomes.forEach((n, i) => {
+      const c = document.createElement('span'); c.className = 'chip'; c.textContent = n;
+      const x = document.createElement('button'); x.type = 'button'; x.textContent = '×'; x.setAttribute('aria-label', 'Tirar ' + n);
+      x.onclick = () => { nomes.splice(i, 1); desenharInicio(); };
+      c.append(x); C.append(c);
+    });
+    const faltam = 2 - nomes.length;
+    $('#dicaJog').textContent = faltam > 0 ? (faltam === 2 ? 'Coloque pelo menos 2 nomes.' : 'Falta mais 1 nome.') : '';
+    $('#dicaJog').style.display = faltam > 0 ? '' : 'none';
+  }
+  chave.onclick = () => { placarLigado = !placarLigado; desenharInicio(); if (placarLigado) $('#inputNome').focus(); };
+  $('#formNome').onsubmit = ev => {
+    ev.preventDefault();
+    const n = $('#inputNome').value.trim();
+    if (n && nomes.length < 12) { nomes.push(n); $('#inputNome').value = ''; desenharInicio(); }
+    $('#inputNome').focus();
+  };
+  $('#btnComecar').onclick = () => {
+    const lista = placarLigado ? nomes.slice() : [];
+    if (placarLigado && lista.length < 2) {
+      const pendente = $('#inputNome').value.trim();
+      if (pendente) { $('#formNome').requestSubmit(); if (nomes.length >= 2) return $('#btnComecar').click(); }
+      $('#inputNome').focus(); $('#nomes').animate([{ transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'none' }], { duration: 250 }); return;
+    }
+    abrirRegras(() => { E = novoEstado(lista); tirarPergunta(false); ir('jogo'); desenharJogo(true); }, 'Entendi, vamos jogar!');
+  };
+
+  /* jogo */
+  const cartaEl = $('#carta');
+  const imgs = id => ({ frente: 'cartas/' + id + '.webp', verso: 'cartas/' + id + '-verso.webp' });
+  function precarregar(id) { if (!id) return; const s = imgs(id); [s.frente, s.verso].forEach(u => { const i = new Image(); i.src = u; }); }
+
+  function tirarPergunta(avancaRodada) {
+    if (avancaRodada) E.rodada++;
+    E.atual = E.perguntas.shift() || null;
+    E.virada = false; E.emCuringa = false;
+    // regra 5: a cada duas rodadas, alguém pode sacar uma carta-curinga
+    E.curingaLiberada = E.rodada > 1 && (E.rodada - 1) % 2 === 0 && E.curingas.length > 0;
+    salvar();
+  }
+
+  function desenharJogo(animar) {
+    if (!E.atual) return mostrarFim();
+    const s = imgs(E.atual);
+    $('#imgVerso').src = s.verso; $('#imgFrente').src = s.frente;
+    $('#imgFrente').alt = textoDe[E.atual];
+    cartaEl.classList.toggle('virada', E.virada);
+    if (animar) { cartaEl.classList.remove('entrando'); void cartaEl.offsetWidth; cartaEl.classList.add('entrando'); }
+    const tipo = tipoDe(E.atual);
+    $('#infoRodada').textContent = E.emCuringa ? (tipo === 'ouro' ? 'Carta ouro' : 'Carta-curinga') : 'Rodada ' + E.rodada;
+    $('#infoResta').textContent = E.perguntas.length === 1 ? '1 pergunta no monte' : E.perguntas.length + ' perguntas no monte';
+    $('#toque').textContent = !E.virada ? 'Toque na carta para virar'
+      : E.emCuringa ? 'Toque na carta para voltar à pergunta'
+      : E.perguntas.length ? 'Leia em voz alta · toque na carta para a próxima' : 'Leia em voz alta · era a última!';
+    $('#jogo').classList.toggle('placar-on', !!E.placar);
+    $('#placar').classList.toggle('ouro-on', E.emCuringa && tipo === 'ouro' && E.virada);
+    desenharPlacar();
+    $('#monte1').style.display = E.perguntas.length > 0 ? '' : 'none';
+    $('#monte2').style.display = E.perguntas.length > 1 ? '' : 'none';
+    $('#btnCuringa').classList.toggle('mostrar', E.curingaLiberada && !E.emCuringa);
+    $('#btnProxima').textContent = E.emCuringa ? 'Voltar para a pergunta' : (E.perguntas.length ? 'Próxima pergunta' : 'Terminar o jogo');
+    $('#btnProxima').disabled = !E.virada;
+    precarregar(E.perguntas[0]); if (E.curingaLiberada) precarregar(E.curingas[0]);
+  }
+
+  // 1º toque vira a carta; com ela virada, o toque abre a próxima (ou volta da curinga)
+  cartaEl.onclick = () => {
+    if (!E.virada) { E.virada = true; salvar(); desenharJogo(); return; }
+    if (E.emCuringa || E.perguntas.length) $('#btnProxima').click();
+  };
+  $('#btnCuringa').onclick = () => {
+    E.guardada = { id: E.atual, virada: E.virada };
+    E.atual = E.curingas.shift(); E.virada = false; E.emCuringa = true; E.curingaLiberada = false;
+    salvar(); desenharJogo(true);
+  };
+  $('#btnProxima').onclick = () => {
+    if (E.emCuringa) { const g = E.guardada; E.atual = g.id; E.virada = g.virada; E.emCuringa = false; E.guardada = null; salvar(); desenharJogo(true); return; }
+    if (!E.perguntas.length) return mostrarFim();
+    tirarPergunta(true); desenharJogo(true);
+  };
+
+  /* placar */
+  function desenharPlacar() {
+    if (!E.placar) return;
+    const L = $('#placarLista'); L.innerHTML = '';
+    E.jogadores.forEach((j, i) => {
+      const r = document.createElement('div'); r.className = 'jog';
+      r.innerHTML = '<span class="nome"></span><span class="pts"></span>' +
+        '<button class="pt" data-v="1">+1</button><button class="pt" data-v="2">+2</button>' +
+        '<button class="pt b" data-v="1" aria-label="Bônus: Eu nunca soube disso!">★</button>' +
+        '<button class="pt o" data-v="1">+1 ouro</button>';
+      r.querySelector('.nome').textContent = j.nome; r.querySelector('.pts').textContent = j.pts;
+      r.querySelectorAll('.pt').forEach(b => b.onclick = () => {
+        j.pts += +b.dataset.v; E.historico.push([i, +b.dataset.v]); salvar(); desenharPlacar();
+        L.children[i].querySelector('.pts').animate([{ transform: 'scale(1.5)' }, { transform: 'none' }], { duration: 300 });
+      });
+      L.append(r);
+    });
+    $('#btnDesfazer').style.visibility = E.historico.length ? '' : 'hidden';
+  }
+  $('#btnDesfazer').onclick = () => { const h = E.historico.pop(); if (h) { E.jogadores[h[0]].pts -= h[1]; salvar(); desenharPlacar(); } };
+
+  function mostrarFim() {
+    const R = $('#ranking'); R.innerHTML = '';
+    if (E && E.placar) {
+      $('#fimTexto').textContent = 'Ganha quem acumular mais pontos ou quem tiver contado a história mais surpreendente da noite.';
+      E.jogadores.slice().sort((a, b) => b.pts - a.pts).forEach(j => {
+        const li = document.createElement('li'); li.innerHTML = '<span></span><span></span>';
+        li.children[0].textContent = j.nome; li.children[1].textContent = j.pts + (j.pts === 1 ? ' ponto' : ' pontos'); R.append(li);
+      });
+    } else $('#fimTexto').textContent = 'O objetivo é colecionar histórias.';
+    E = null; localStorage.removeItem(CHAVE); desenharInicio(); ir('fim');
+  }
+  $('#btnDeNovo').onclick = () => ir('inicio');
+
+  /* ajuda e menu */
+  $('#btnAjuda').onclick = () => abrirRegras(null, 'Entendi');
+  const menu = $('#menu'), fecharMenu = () => menu.classList.remove('aberto');
+  $('#btnMenu').onclick = () => menu.classList.add('aberto');
+  menu.onclick = e => { if (e.target === menu) fecharMenu(); };
+  $('#mFechar').onclick = fecharMenu;
+  $('#mRegras').onclick = () => { fecharMenu(); abrirRegras(null, 'Entendi'); };
+  $('#mFim').onclick = () => { fecharMenu(); mostrarFim(); };
+  $('#mRecomecar').onclick = () => { fecharMenu(); E = null; localStorage.removeItem(CHAVE); desenharInicio(); ir('inicio'); };
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { fecharMenu(); } });
+
+  desenharInicio();
+})();
+</script>
+</body>
+</html>
